@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Anticipation — Fin de contrat</title>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f7f5f0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding: 32px 32px 60px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1.5px solid #e0dbd1;
+  }
+
+  .page-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #e07a3c;
+    background: rgba(224,122,60,0.1);
+    border: 1px solid rgba(224,122,60,0.25);
+    padding: 5px 12px;
+    border-radius: 100px;
+    margin-bottom: 18px;
+  }
+
+  .page-title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 700;
+    font-size: 46px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: #1a1a1a;
+    margin-bottom: 14px;
+  }
+
+  .page-title em {
+    font-style: italic;
+    color: #e07a3c;
+    font-weight: 300;
+  }
+
+  .page-desc {
+    font-size: 16px;
+    color: #6b6560;
+    line-height: 1.7;
+    max-width: 560px;
+    font-weight: 300;
+  }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 40px; }
+
+  .section-title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline { position: relative; padding-left: 28px; }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px; top: 8px; bottom: 8px;
+    width: 1.5px;
+    background: linear-gradient(to bottom, #e07a3c, #f0c4a0, #e8e4dc);
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+    background: #fff;
+    border: 1px solid #e8e4dc;
+    border-radius: 12px;
+    padding: 18px 22px;
+    transition: box-shadow 0.2s;
+  }
+
+  .timeline-item:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -24px;
+    top: 20px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #e07a3c;
+    border: 2px solid #f7f5f0;
+    box-shadow: 0 0 0 1.5px #e07a3c;
+  }
+
+  .timeline-item.muted::before { background: #c8c2b8; box-shadow: 0 0 0 1.5px #c8c2b8; }
+  .timeline-item.warn::before { background: #f5a623; box-shadow: 0 0 0 1.5px #f5a623; }
+  .timeline-item.danger::before { background: #e03c3c; box-shadow: 0 0 0 1.5px #e03c3c; }
+
+  .tl-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #e07a3c;
+    margin-bottom: 4px;
+  }
+
+  .tl-label.warn { color: #f5a623; }
+  .tl-label.danger { color: #e03c3c; }
+  .tl-label.muted { color: #a09890; }
+
+  .tl-title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+  }
+
+  .tl-desc {
+    font-size: 13.5px;
+    color: #6b6560;
+    line-height: 1.6;
+  }
+
+  .tl-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin-top: 8px;
+  }
+
+  .tl-badge.orange { background: rgba(224,122,60,0.1); color: #e07a3c; border: 1px solid rgba(224,122,60,0.2); }
+  .tl-badge.red { background: rgba(224,60,60,0.1); color: #e03c3c; border: 1px solid rgba(224,60,60,0.2); }
+  .tl-badge.green { background: rgba(40,180,100,0.1); color: #28b464; border: 1px solid rgba(40,180,100,0.2); }
+
+  /* ── INFO BOX ── */
+  .info-box {
+    background: #fff;
+    border: 1px solid #e8e4dc;
+    border-left: 3px solid #e07a3c;
+    border-radius: 0 10px 10px 0;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+  }
+
+  .info-box-title {
+    font-weight: 500;
+    font-size: 14px;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .info-box-desc {
+    font-size: 13.5px;
+    color: #6b6560;
+    line-height: 1.6;
+  }
+
+  /* ── CONTRACT TEMPLATE ── */
+  .template-box {
+    background: #fff;
+    border: 1px solid #e8e4dc;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .template-header {
+    padding: 14px 20px;
+    background: #f3efe8;
+    border-bottom: 1px solid #e8e4dc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .template-header-title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .template-link {
+    font-size: 11px;
+    font-weight: 500;
+    color: #e07a3c;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .template-field {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 20px;
+    border-bottom: 1px solid #f0ece5;
+    transition: background 0.15s;
+  }
+
+  .template-field:last-child { border-bottom: none; }
+  .template-field:hover { background: #faf8f5; }
+
+  .field-icon { font-size: 16px; width: 24px; text-align: center; }
+  .field-label { font-size: 13.5px; color: #1a1a1a; flex: 1; }
+  .field-type {
+    font-size: 11px;
+    color: #a09890;
+    background: #f3efe8;
+    padding: 2px 8px;
+    border-radius: 100px;
+  }
+
+  /* ── FOOTER ── */
+  .page-footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid #e8e4dc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-owner {
+    font-size: 12px;
+    color: #a09890;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .footer-pages {
+    font-size: 11px;
+    color: #c8c2b8;
+    letter-spacing: 0.05em;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-header { animation: fadeUp 0.4s ease both; }
+  .section:nth-child(2) { animation: fadeUp 0.4s 0.1s ease both; }
+  .section:nth-child(3) { animation: fadeUp 0.4s 0.2s ease both; }
+  .section:nth-child(4) { animation: fadeUp 0.4s 0.3s ease both; }
+</style>
+</head>
+<body>
+
+  <div class="page-header">
+    <div class="page-tag">🛡️ Rétention · Page 1 / 5</div>
+    <h1 class="page-title">Anticiper<br>la fin de <em>contrat</em></h1>
+    <p class="page-desc">On ne subit pas les fins de contrat — on les anticipe. Voici le process pour ne jamais être pris de court et maximiser le renouvellement.</p>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="section">
+    <div class="section-title">⏱️ La règle des 3 mois</div>
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="tl-label">J + 0 — À la signature</div>
+        <div class="tl-title">Noter la date de fin dans Notion + Pipedrive</div>
+        <div class="tl-desc">Dès que le contrat est signé, la date de fin est renseignée dans le template Notion et le CRM. C'est non négociable.</div>
+        <span class="tl-badge green">✓ Obligatoire dès le closing</span>
+      </div>
+
+      <div class="timeline-item warn">
+        <div class="tl-label warn">J - 90 — 3 mois avant</div>
+        <div class="tl-title">Déclenchement de l'alerte renouvellement</div>
+        <div class="tl-desc">Le CSM reçoit une notification automatique. Premier contact avec le client pour un bilan de satisfaction et présenter les options de renouvellement.</div>
+        <span class="tl-badge orange">⏰ Rappel automatique à configurer</span>
+      </div>
+
+      <div class="timeline-item warn">
+        <div class="tl-label warn">J - 60 — 2 mois avant</div>
+        <div class="tl-title">Call de bilan + envoi du nouveau contrat</div>
+        <div class="tl-desc">Appel structuré pour valider la continuation. Le nouveau contrat standardisé est envoyé à cette étape — pas avant, pas après.</div>
+        <span class="tl-badge orange">📄 Template contrat → voir ci-dessous</span>
+      </div>
+
+      <div class="timeline-item danger">
+        <div class="tl-label danger">J - 30 — Dernier recours</div>
+        <div class="tl-title">Signature ou activation process churn</div>
+        <div class="tl-desc">Si le client n'a pas signé à J-30, on bascule sur le process churn (voir page 2). Pas de panique — on a une stratégie pour ça.</div>
+        <span class="tl-badge red">🚨 Escalade si pas de réponse</span>
+      </div>
+
+      <div class="timeline-item muted">
+        <div class="tl-label muted">J - 0 — Fin de contrat</div>
+        <div class="tl-title">Situation résolue dans tous les cas</div>
+        <div class="tl-desc">Le client a renouvelé ✓ — ou on a documenté le churn et lancé la reconquête. On n'est jamais surpris.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONTRAT TEMPLATE -->
+  <div class="section">
+    <div class="section-title">📄 Nouveau contrat standardisé</div>
+
+    <div class="info-box">
+      <div class="info-box-title">💡 Pourquoi standardiser ?</div>
+      <div class="info-box-desc">Un contrat standardisé évite les erreurs, accélère la signature, et garantit que toutes les infos critiques sont présentes. Le template Notion Nassan est la version officielle — aucune variante non validée.</div>
+    </div>
+
+    <div class="template-box">
+      <div class="template-header">
+        <div class="template-header-title">📋 Template Notion Nassan — Nouveau contrat</div>
+        <a href="#" class="template-link">Ouvrir le template ↗</a>
+      </div>
+      <div class="template-field">
+        <span class="field-icon">🏢</span>
+        <span class="field-label">Entité juridique du client</span>
+        <span class="field-type">Texte</span>
+      </div>
+      <div class="template-field">
+        <span class="field-icon">📅</span>
+        <span class="field-label">Date de début & date de fin</span>
+        <span class="field-type">Date</span>
+      </div>
+      <div class="template-field">
+        <span class="field-icon">💰</span>
+        <span class="field-label">Montant & conditions tarifaires</span>
+        <span class="field-type">Nombre</span>
+      </div>
+      <div class="template-field">
+        <span class="field-icon">📍</span>
+        <span class="field-label">Adresses de facturation & sites</span>
+        <span class="field-type">Texte</span>
+      </div>
+      <div class="template-field">
+        <span class="field-icon">🔔</span>
+        <span class="field-label">Rappel automatique J-90 activé</span>
+        <span class="field-type">Checkbox</span>
+      </div>
+      <div class="template-field">
+        <span class="field-icon">✍️</span>
+        <span class="field-label">Conditions de résiliation</span>
+        <span class="field-type">Texte</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-owner">📕 Sales Bible · Fullsoon</div>
+    <div class="footer-pages">Page 1 / 5</div>
+  </div>
+
+</body>
+</html>

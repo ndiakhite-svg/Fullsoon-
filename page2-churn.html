@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Analyse Churn</title>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f7f5f0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding: 32px 32px 60px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1.5px solid #e0dbd1;
+  }
+
+  .page-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #c44b4b;
+    background: rgba(196,75,75,0.08);
+    border: 1px solid rgba(196,75,75,0.2);
+    padding: 5px 12px;
+    border-radius: 100px;
+    margin-bottom: 18px;
+  }
+
+  .page-title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 700;
+    font-size: 46px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: #1a1a1a;
+    margin-bottom: 14px;
+  }
+
+  .page-title em {
+    font-style: italic;
+    color: #c44b4b;
+    font-weight: 300;
+  }
+
+  .page-desc {
+    font-size: 16px;
+    color: #6b6560;
+    line-height: 1.7;
+    max-width: 560px;
+    font-weight: 300;
+  }
+
+  .section { margin-bottom: 44px; }
+
+  .section-title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ── REASON CARDS ── */
+  .reason-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .reason-card {
+    background: #fff;
+    border: 1px solid #e8e4dc;
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    transition: box-shadow 0.2s;
+    cursor: pointer;
+  }
+
+  .reason-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+
+  .reason-severity {
+    width: 8px;
+    flex-shrink: 0;
+    border-radius: 100px;
+    margin-top: 2px;
+    align-self: stretch;
+    min-height: 40px;
+  }
+
+  .sev-high { background: #e03c3c; }
+  .sev-med { background: #f5a623; }
+  .sev-low { background: #c8c2b8; }
+
+  .reason-content {}
+  .reason-title {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+  }
+  .reason-desc { font-size: 12.5px; color: #6b6560; line-height: 1.5; }
+
+  .reason-tag {
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 100px;
+    margin-top: 6px;
+  }
+
+  .tag-high { background: rgba(224,60,60,0.1); color: #c44b4b; }
+  .tag-med { background: rgba(245,166,35,0.1); color: #d48b1a; }
+  .tag-low { background: rgba(160,152,144,0.1); color: #8a8278; }
+
+  /* ── DOCUMENT FORM ── */
+  .doc-form {
+    background: #fff;
+    border: 1px solid #e8e4dc;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .doc-form-header {
+    padding: 14px 20px;
+    background: #fdf0f0;
+    border-bottom: 1px solid #f0dede;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .doc-form-title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .doc-form-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #c44b4b;
+    background: rgba(196,75,75,0.1);
+    border: 1px solid rgba(196,75,75,0.2);
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+
+  .doc-field {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f5f2ee;
+    transition: background 0.15s;
+  }
+
+  .doc-field:last-child { border-bottom: none; }
+  .doc-field:hover { background: #faf8f5; }
+
+  .doc-field-icon { font-size: 18px; margin-top: 1px; }
+
+  .doc-field-body { flex: 1; }
+  .doc-field-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    margin-bottom: 3px;
+  }
+  .doc-field-hint { font-size: 12px; color: #6b6560; }
+
+  .doc-field-input {
+    width: 140px;
+    background: #f7f5f0;
+    border: 1px solid #e0dbd1;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12.5px;
+    color: #a09890;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* ── RECONQUEST ── */
+  .reconquest-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .reconquest-item {
+    background: #fff;
+    border: 1px solid #e8e4dc;
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    cursor: pointer;
+  }
+
+  .reconquest-item:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    border-color: #28b464;
+  }
+
+  .reconquest-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: rgba(40,180,100,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .reconquest-body { flex: 1; }
+  .reconquest-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    margin-bottom: 2px;
+  }
+  .reconquest-desc { font-size: 12.5px; color: #6b6560; }
+
+  .reconquest-timing {
+    font-size: 11px;
+    font-weight: 500;
+    color: #28b464;
+    background: rgba(40,180,100,0.08);
+    border: 1px solid rgba(40,180,100,0.2);
+    padding: 3px 10px;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: #fff;
+    border: 1px solid #e8e4dc;
+    border-left: 3px solid #c44b4b;
+    border-radius: 0 10px 10px 0;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .callout-emoji { font-size: 18px; margin-top: 1px; }
+  .callout-text { font-size: 13.5px; color: #4a4540; line-height: 1.6; }
+  .callout-text strong { color: #1a1a1a; font-weight: 500; }
+
+  .page-footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid #e8e4dc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-owner { font-size: 12px; color: #a09890; }
+  .footer-pages { font-size: 11px; color: #c8c2b8; letter-spacing: 0.05em; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-header { animation: fadeUp 0.4s ease both; }
+  .section:nth-child(2) { animation: fadeUp 0.4s 0.1s ease both; }
+  .section:nth-child(3) { animation: fadeUp 0.4s 0.2s ease both; }
+  .section:nth-child(4) { animation: fadeUp 0.4s 0.3s ease both; }
+</style>
+</head>
+<body>
+
+  <div class="page-header">
+    <div class="page-tag">📉 Churn · Page 2 / 5</div>
+    <h1 class="page-title">Analyser<br>le <em>churn</em></h1>
+    <p class="page-desc">Un client perdu n'est pas une défaite — c'est une source d'apprentissage. On documente tout, on comprend pourquoi, et on prépare la reconquête.</p>
+  </div>
+
+  <!-- RAISONS -->
+  <div class="section">
+    <div class="section-title">❓ Raisons à documenter</div>
+
+    <div class="callout">
+      <span class="callout-emoji">📌</span>
+      <div class="callout-text"><strong>Règle d'or :</strong> chaque churn doit être documenté dans Notion dans les 48h. Sans documentation, on répète les mêmes erreurs. Les raisons ci-dessous sont les plus fréquentes — cocher celle(s) qui s'applique(nt).</div>
+    </div>
+
+    <div class="reason-grid">
+      <div class="reason-card">
+        <div class="reason-severity sev-high"></div>
+        <div class="reason-content">
+          <div class="reason-title">Prix trop élevé vs valeur perçue</div>
+          <div class="reason-desc">Le client ne ressent pas le ROI. Souvent un problème d'onboarding ou de suivi.</div>
+          <span class="reason-tag tag-high">Impact élevé</span>
+        </div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-severity sev-high"></div>
+        <div class="reason-content">
+          <div class="reason-title">Manque d'adoption interne</div>
+          <div class="reason-desc">L'outil n'est pas utilisé par les équipes. Problème d'adoption côté client.</div>
+          <span class="reason-tag tag-high">Impact élevé</span>
+        </div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-severity sev-med"></div>
+        <div class="reason-content">
+          <div class="reason-title">Changement d'interlocuteur</div>
+          <div class="reason-desc">Réorganisation interne, nouveau décideur qui repart de zéro.</div>
+          <span class="reason-tag tag-med">Impact moyen</span>
+        </div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-severity sev-med"></div>
+        <div class="reason-content">
+          <div class="reason-title">Concurrent plus attractif</div>
+          <div class="reason-desc">Offre alternative proposée à un tarif inférieur ou avec plus de features.</div>
+          <span class="reason-tag tag-med">Impact moyen</span>
+        </div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-severity sev-low"></div>
+        <div class="reason-content">
+          <div class="reason-title">Besoin non couvert</div>
+          <div class="reason-desc">Une feature manquante bloque l'usage au quotidien.</div>
+          <span class="reason-tag tag-low">À remonter produit</span>
+        </div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-severity sev-low"></div>
+        <div class="reason-content">
+          <div class="reason-title">Budget coupé / restructuration</div>
+          <div class="reason-desc">Décision externe, indépendante de la satisfaction produit.</div>
+          <span class="reason-tag tag-low">Contexte externe</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FICHE CHURN -->
+  <div class="section">
+    <div class="section-title">📋 Fiche de documentation churn</div>
+    <div class="doc-form">
+      <div class="doc-form-header">
+        <div class="doc-form-title">📋 Template Notion Nassan — Fiche Churn</div>
+        <span class="doc-form-tag">Obligatoire</span>
+      </div>
+      <div class="doc-field">
+        <span class="doc-field-icon">🏢</span>
+        <div class="doc-field-body">
+          <div class="doc-field-label">Nom du client</div>
+          <div class="doc-field-hint">Entité juridique complète</div>
+        </div>
+        <div class="doc-field-input">Texte libre</div>
+      </div>
+      <div class="doc-field">
+        <span class="doc-field-icon">📅</span>
+        <div class="doc-field-body">
+          <div class="doc-field-label">Date du churn</div>
+          <div class="doc-field-hint">Date officielle de fin de contrat</div>
+        </div>
+        <div class="doc-field-input">Date</div>
+      </div>
+      <div class="doc-field">
+        <span class="doc-field-icon">❓</span>
+        <div class="doc-field-body">
+          <div class="doc-field-label">Raison principale</div>
+          <div class="doc-field-hint">Choisir parmi les raisons documentées</div>
+        </div>
+        <div class="doc-field-input">Liste déroulante</div>
+      </div>
+      <div class="doc-field">
+        <span class="doc-field-icon">💬</span>
+        <div class="doc-field-body">
+          <div class="doc-field-label">Verbatim client</div>
+          <div class="doc-field-hint">Ce qu'il a dit mot pour mot (si dispo)</div>
+        </div>
+        <div class="doc-field-input">Texte long</div>
+      </div>
+      <div class="doc-field">
+        <span class="doc-field-icon">🔄</span>
+        <div class="doc-field-body">
+          <div class="doc-field-label">Possibilité de reconquête</div>
+          <div class="doc-field-hint">Oui / Non / À réévaluer dans 3 mois</div>
+        </div>
+        <div class="doc-field-input">Sélecteur</div>
+      </div>
+      <div class="doc-field">
+        <span class="doc-field-icon">📆</span>
+        <div class="doc-field-body">
+          <div class="doc-field-label">Date de relance prévue</div>
+          <div class="doc-field-hint">Si reconquête possible — J+90 recommandé</div>
+        </div>
+        <div class="doc-field-input">Date</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECONQUÊTE -->
+  <div class="section">
+    <div class="section-title">🔄 Possibilités de reconquête</div>
+    <div class="reconquest-list">
+      <div class="reconquest-item">
+        <div class="reconquest-icon">✨</div>
+        <div class="reconquest-body">
+          <div class="reconquest-title">Nouvelle fonctionnalité couvrant le besoin manquant</div>
+          <div class="reconquest-desc">Si le churn était lié à un besoin non couvert, une relance dès la sortie de la feature est prioritaire.</div>
+        </div>
+        <span class="reconquest-timing">À la release</span>
+      </div>
+      <div class="reconquest-item">
+        <div class="reconquest-icon">📞</div>
+        <div class="reconquest-body">
+          <div class="reconquest-title">Offre de réactivation à J+90</div>
+          <div class="reconquest-desc">Contact chaleureux 3 mois après le churn. Pas de pitch agressif — juste une prise de nouvelles et une offre adaptée.</div>
+        </div>
+        <span class="reconquest-timing">J + 90</span>
+      </div>
+      <div class="reconquest-item">
+        <div class="reconquest-icon">👤</div>
+        <div class="reconquest-body">
+          <div class="reconquest-title">Nouveau contact chez le client</div>
+          <div class="reconquest-desc">Changement d'équipe = nouvelle opportunité. Surveiller LinkedIn pour détecter les arrivées de décideurs.</div>
+        </div>
+        <span class="reconquest-timing">En continu</span>
+      </div>
+      <div class="reconquest-item">
+        <div class="reconquest-icon">📣</div>
+        <div class="reconquest-body">
+          <div class="reconquest-title">Campagne de réengagement ciblée</div>
+          <div class="reconquest-desc">Email personnalisé à 6 mois avec les nouvelles fonctions et un témoignage client similaire à leur secteur.</div>
+        </div>
+        <span class="reconquest-timing">J + 180</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-owner">📕 Sales Bible · Fullsoon</div>
+    <div class="footer-pages">Page 2 / 5</div>
+  </div>
+
+</body>
+</html>

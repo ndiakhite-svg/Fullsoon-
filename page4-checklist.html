@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Checklist — Informations à collecter</title>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f7f5f0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding: 32px 32px 60px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1.5px solid #e0dbd1;
+  }
+
+  .page-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #059669;
+    background: rgba(5,150,105,0.08);
+    border: 1px solid rgba(5,150,105,0.2);
+    padding: 5px 12px;
+    border-radius: 100px;
+    margin-bottom: 18px;
+  }
+
+  .page-title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 700;
+    font-size: 46px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: #1a1a1a;
+    margin-bottom: 14px;
+  }
+
+  .page-title em {
+    font-style: italic;
+    color: #059669;
+    font-weight: 300;
+  }
+
+  .page-desc {
+    font-size: 16px;
+    color: #6b6560;
+    line-height: 1.7;
+    max-width: 560px;
+    font-weight: 300;
+  }
+
+  .section { margin-bottom: 44px; }
+
+  .section-title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-header {
+    background: #fff;
+    border: 1px solid #e8e4dc;
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .progress-info { flex: 1; }
+  .progress-label {
+    font-size: 13px;
+    color: #6b6560;
+    margin-bottom: 8px;
+  }
+
+  .progress-bar-wrap {
+    height: 7px;
+    background: #f0ece5;
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #059669, #34d399);
+    border-radius: 100px;
+    transition: width 1s ease;
+  }
+
+  .progress-count {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #059669;
+    white-space: nowrap;
+  }
+
+  .progress-count span { font-size: 14px; font-weight: 400; color: #a09890; }
+
+  /* ── CHECKLIST ── */
+  .checklist-group {
+    background: #fff;
+    border: 1px solid #e8e4dc;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  .checklist-group-header {
+    padding: 12px 18px;
+    background: #f7f5f0;
+    border-bottom: 1px solid #e8e4dc;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #8a8278;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    border-bottom: 1px solid #f5f2ee;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .check-item:last-child { border-bottom: none; }
+  .check-item:hover { background: #faf8f5; }
+
+  .check-box {
+    width: 20px; height: 20px;
+    border: 1.5px solid #d0cbc3;
+    border-radius: 5px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    color: #fff;
+    transition: all 0.15s;
+  }
+
+  .check-box.done {
+    background: #059669;
+    border-color: #059669;
+  }
+
+  .check-body { flex: 1; }
+  .check-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    margin-bottom: 3px;
+  }
+
+  .check-title.done {
+    color: #a09890;
+    text-decoration: line-through;
+  }
+
+  .check-desc { font-size: 12.5px; color: #6b6560; line-height: 1.5; }
+
+  .check-required {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 100px;
+    white-space: nowrap;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .req-must {
+    background: rgba(5,150,105,0.1);
+    color: #059669;
+    border: 1px solid rgba(5,150,105,0.2);
+  }
+
+  .req-crit {
+    background: rgba(224,60,60,0.1);
+    color: #c44b4b;
+    border: 1px solid rgba(224,60,60,0.2);
+  }
+
+  /* ── INFO BOX ── */
+  .info-box {
+    background: #fff;
+    border: 1px solid #e8e4dc;
+    border-left: 3px solid #059669;
+    border-radius: 0 10px 10px 0;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 12px;
+  }
+
+  .info-emoji { font-size: 18px; margin-top: 1px; }
+  .info-text { font-size: 13.5px; color: #4a4540; line-height: 1.6; }
+  .info-text strong { color: #1a1a1a; font-weight: 500; }
+
+  /* ── TEMPLATE LINK ── */
+  .template-cta {
+    background: linear-gradient(135deg, rgba(5,150,105,0.06), rgba(52,211,153,0.04));
+    border: 1px solid rgba(5,150,105,0.2);
+    border-radius: 12px;
+    padding: 22px 24px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .template-cta:hover {
+    box-shadow: 0 4px 20px rgba(5,150,105,0.1);
+    border-color: rgba(5,150,105,0.35);
+  }
+
+  .template-cta-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: rgba(5,150,105,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .template-cta-body { flex: 1; }
+  .template-cta-title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 3px;
+  }
+  .template-cta-sub { font-size: 13px; color: #6b6560; }
+
+  .template-cta-arrow {
+    font-size: 18px;
+    color: #059669;
+    transition: transform 0.2s;
+  }
+
+  .template-cta:hover .template-cta-arrow { transform: translateX(4px); }
+
+  .page-footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid #e8e4dc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-owner { font-size: 12px; color: #a09890; }
+  .footer-pages { font-size: 11px; color: #c8c2b8; letter-spacing: 0.05em; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .page-header { animation: fadeUp 0.4s ease both; }
+  .section:nth-child(2) { animation: fadeUp 0.4s 0.1s ease both; }
+  .section:nth-child(3) { animation: fadeUp 0.4s 0.2s ease both; }
+  .section:nth-child(4) { animation: fadeUp 0.4s 0.3s ease both; }
+</style>
+</head>
+<body>
+
+  <div class="page-header">
+    <div class="page-tag">✅ Checklist · Page 4 / 5</div>
+    <h1 class="page-title">Infos à<br><em>collecter</em></h1>
+    <p class="page-desc">Avant chaque lancement client, ces 5 informations sont obligatoires. Sans elles, on ne peut pas facturer correctement, ni livrer le bon service.</p>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="section">
+    <div class="progress-header">
+      <div class="progress-info">
+        <div class="progress-label">Progression de la checklist client</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+      </div>
+      <div class="progress-count" id="progressCount">0 <span>/ 5</span></div>
+    </div>
+
+    <div class="info-box">
+      <span class="info-emoji">⚠️</span>
+      <div class="info-text">
+        <strong>Checklist obligatoire</strong> — Ces informations doivent être collectées <strong>avant la visio de lancement</strong>, pas après. Sans ces données, l'onboarding CSM ne peut pas démarrer. Utiliser le template Notion Nassan pour les centraliser.
+      </div>
+    </div>
+
+    <!-- GROUPE : INFORMATIONS LÉGALES & FACTURATION -->
+    <div class="checklist-group">
+      <div class="checklist-group-header">🏢 Informations légales & facturation</div>
+
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div class="check-body">
+          <div class="check-title">Interlocuteur recettes</div>
+          <div class="check-desc">Nom, prénom, email et téléphone de la personne responsable des paiements / comptabilité côté client.</div>
+        </div>
+        <span class="check-required req-crit">🔴 Critique</span>
+      </div>
+
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div class="check-body">
+          <div class="check-title">Adresse de facturation</div>
+          <div class="check-desc">Adresse complète pour émettre les factures (peut différer de l'adresse du site).</div>
+        </div>
+        <span class="check-required req-crit">🔴 Critique</span>
+      </div>
+
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div class="check-body">
+          <div class="check-title">Entité juridique</div>
+          <div class="check-desc">Raison sociale exacte, numéro SIRET / TVA intracommunautaire. Doit correspondre au contrat signé.</div>
+        </div>
+        <span class="check-required req-crit">🔴 Critique</span>
+      </div>
+
+    </div>
+
+    <!-- GROUPE : LOGISTIQUE & SETUP -->
+    <div class="checklist-group">
+      <div class="checklist-group-header">📍 Logistique & setup</div>
+
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div class="check-body">
+          <div class="check-title">Adresses des sites</div>
+          <div class="check-desc">Liste de tous les établissements / sites concernés par l'abonnement. Indispensable pour le déploiement.</div>
+        </div>
+        <span class="check-required req-must">✅ Obligatoire</span>
+      </div>
+
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div class="check-body">
+          <div class="check-title">Paiement des frais de setup confirmé</div>
+          <div class="check-desc">Le setup doit être réglé avant l'activation. Vérifier le statut dans Pipedrive (tag "Setup — Payé ✓").</div>
+        </div>
+        <span class="check-required req-crit">🔴 Critique</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TEMPLATE NOTION -->
+  <div class="section">
+    <div class="section-title">📋 Template centralisé</div>
+    <div class="template-cta">
+      <div class="template-cta-icon">📋</div>
+      <div class="template-cta-body">
+        <div class="template-cta-title">Template Notion Nassan — Fiche client</div>
+        <div class="template-cta-sub">Toutes les informations à compléter dans un seul endroit. Partageable directement avec le CSM.</div>
+      </div>
+      <div class="template-cta-arrow">→</div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-owner">📕 Sales Bible · Fullsoon</div>
+    <div class="footer-pages">Page 4 / 5</div>
+  </div>
+
+<script>
+  function toggle(item) {
+    const box = item.querySelector('.check-box');
+    const title = item.querySelector('.check-title');
+    const isChecked = box.classList.contains('done');
+    if (isChecked) {
+      box.classList.remove('done');
+      box.textContent = '✓';
+      title.classList.remove('done');
+    } else {
+      box.classList.add('done');
+      box.textContent = '✓';
+      title.classList.add('done');
+    }
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const total = document.querySelectorAll('.check-item').length;
+    const done = document.querySelectorAll('.check-box.done').length;
+    const pct = (done / total) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressCount').innerHTML = done + ' <span>/ ' + total + '</span>';
+  }
+
+  // Init progress bar with animation
+  setTimeout(() => {
+    document.getElementById('progressFill').style.width = '0%';
+  }, 100);
+</script>
+
+</body>
+</html>

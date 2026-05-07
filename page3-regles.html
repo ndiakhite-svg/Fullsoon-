@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Règles — Process Sales</title>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f7f5f0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding: 32px 32px 60px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1.5px solid #e0dbd1;
+  }
+
+  .page-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #2563eb;
+    background: rgba(37,99,235,0.08);
+    border: 1px solid rgba(37,99,235,0.2);
+    padding: 5px 12px;
+    border-radius: 100px;
+    margin-bottom: 18px;
+  }
+
+  .page-title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 700;
+    font-size: 46px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: #1a1a1a;
+    margin-bottom: 14px;
+  }
+
+  .page-title em {
+    font-style: italic;
+    color: #2563eb;
+    font-weight: 300;
+  }
+
+  .page-desc {
+    font-size: 16px;
+    color: #6b6560;
+    line-height: 1.7;
+    max-width: 560px;
+    font-weight: 300;
+  }
+
+  .section { margin-bottom: 44px; }
+
+  .section-title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ── RULE CARDS ── */
+  .rule-card {
+    background: #fff;
+    border: 1px solid #e8e4dc;
+    border-radius: 14px;
+    padding: 24px 24px 20px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+
+  .rule-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.07); }
+
+  .rule-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .rule-card.orange::before { background: linear-gradient(90deg, #f5a623, #e07a3c); }
+  .rule-card.blue::before { background: linear-gradient(90deg, #2563eb, #60a5fa); }
+
+  .rule-number {
+    position: absolute;
+    top: 20px; right: 20px;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: #f0ece5;
+    line-height: 1;
+    user-select: none;
+  }
+
+  .rule-icon-wrap {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+
+  .rule-icon-wrap.orange { background: rgba(245,166,35,0.12); }
+  .rule-icon-wrap.blue { background: rgba(37,99,235,0.1); }
+
+  .rule-title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+    max-width: 80%;
+  }
+
+  .rule-body {
+    font-size: 14px;
+    color: #6b6560;
+    line-height: 1.7;
+    max-width: 85%;
+    margin-bottom: 14px;
+  }
+
+  .rule-body strong { color: #1a1a1a; font-weight: 500; }
+
+  .rule-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .rule-action.orange {
+    background: rgba(245,166,35,0.1);
+    color: #c47c0a;
+    border: 1px solid rgba(245,166,35,0.25);
+  }
+
+  .rule-action.orange:hover { background: rgba(245,166,35,0.18); }
+
+  .rule-action.blue {
+    background: rgba(37,99,235,0.08);
+    color: #2563eb;
+    border: 1px solid rgba(37,99,235,0.2);
+  }
+
+  .rule-action.blue:hover { background: rgba(37,99,235,0.14); }
+
+  /* ── PIPEDRIVE STEP ── */
+  .pipedrive-steps {
+    background: #fff;
+    border: 1px solid #e8e4dc;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 16px;
+  }
+
+  .pip-header {
+    padding: 12px 18px;
+    background: #f0f4ff;
+    border-bottom: 1px solid #dde5f7;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #2563eb;
+  }
+
+  .pip-step {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 18px;
+    border-bottom: 1px solid #f5f2ee;
+    transition: background 0.15s;
+  }
+
+  .pip-step:last-child { border-bottom: none; }
+  .pip-step:hover { background: #fafaf8; }
+
+  .pip-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(37,99,235,0.1);
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .pip-text { font-size: 13.5px; color: #3a3530; flex: 1; }
+  .pip-text strong { font-weight: 500; }
+
+  .pip-badge {
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+
+  .pip-badge.required {
+    background: rgba(224,60,60,0.1);
+    color: #c44b4b;
+    border: 1px solid rgba(224,60,60,0.2);
+  }
+
+  .pip-badge.auto {
+    background: rgba(37,99,235,0.08);
+    color: #2563eb;
+    border: 1px solid rgba(37,99,235,0.2);
+  }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: #fff;
+    border: 1px solid #e8e4dc;
+    border-left: 3px solid #f5a623;
+    border-radius: 0 10px 10px 0;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .callout-emoji { font-size: 18px; margin-top: 1px; }
+  .callout-text { font-size: 13.5px; color: #4a4540; line-height: 1.6; }
+  .callout-text strong { color: #1a1a1a; font-weight: 500; }
+
+  .page-footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid #e8e4dc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-owner { font-size: 12px; color: #a09890; }
+  .footer-pages { font-size: 11px; color: #c8c2b8; letter-spacing: 0.05em; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .page-header { animation: fadeUp 0.4s ease both; }
+  .section:nth-child(2) { animation: fadeUp 0.4s 0.1s ease both; }
+  .section:nth-child(3) { animation: fadeUp 0.4s 0.2s ease both; }
+</style>
+</head>
+<body>
+
+  <div class="page-header">
+    <div class="page-tag">⚙️ Process Sales · Page 3 / 5</div>
+    <h1 class="page-title">Les <em>règles</em><br>avant lancement</h1>
+    <p class="page-desc">Deux règles simples, non négociables. Elles évitent 80% des problèmes administratifs et assurent une relation client saine dès le départ.</p>
+  </div>
+
+  <!-- RÈGLE 1 : SETUP PAYÉ -->
+  <div class="section">
+    <div class="section-title">📋 Les 2 règles d'or</div>
+
+    <div class="rule-card orange">
+      <div class="rule-number">01</div>
+      <div class="rule-icon-wrap orange">💳</div>
+      <div class="rule-title">Setup payé après la visio</div>
+      <div class="rule-body">
+        Le paiement du setup doit être <strong>confirmé au plus tard après la visio de closing</strong>. Pas de service activé sans setup réglé. C'est protecteur pour tout le monde.
+      </div>
+      <div class="rule-action orange">🔗 Tagger dans Pipedrive → voir ci-dessous</div>
+    </div>
+
+    <div class="pipedrive-steps">
+      <div class="pip-header">
+        🔵 Comment tagger dans Pipedrive — étapes
+      </div>
+      <div class="pip-step">
+        <div class="pip-num">1</div>
+        <div class="pip-text">Ouvrir le deal dans Pipedrive après la visio</div>
+        <span class="pip-badge required">Immédiat</span>
+      </div>
+      <div class="pip-step">
+        <div class="pip-num">2</div>
+        <div class="pip-text">Ajouter le label <strong>"Setup — En attente de paiement"</strong></div>
+        <span class="pip-badge required">Obligatoire</span>
+      </div>
+      <div class="pip-step">
+        <div class="pip-num">3</div>
+        <div class="pip-text">Envoyer le lien de paiement au client dans les 2h</div>
+        <span class="pip-badge required">Délai max 2h</span>
+      </div>
+      <div class="pip-step">
+        <div class="pip-num">4</div>
+        <div class="pip-text">Mettre à jour le label à <strong>"Setup — Payé ✓"</strong> dès réception</div>
+        <span class="pip-badge auto">Maj statut</span>
+      </div>
+      <div class="pip-step">
+        <div class="pip-num">5</div>
+        <div class="pip-text">Passer le deal en "Won" seulement après paiement confirmé</div>
+        <span class="pip-badge required">Règle absolue</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RÈGLE 2 : FIN DE CONTRAT -->
+  <div class="section">
+    <div class="rule-card blue">
+      <div class="rule-number">02</div>
+      <div class="rule-icon-wrap blue">📅</div>
+      <div class="rule-title">Anticiper la fin de contrat dès le départ</div>
+      <div class="rule-body">
+        La date de fin de contrat est renseignée <strong>le jour de la signature</strong>. Pas à J+15. Pas "quand on a le temps". Ce jour-là. Le template Notion Nassan guide cette étape pas à pas.
+      </div>
+      <div class="rule-action blue">📋 Ouvrir le template Notion Nassan ↗</div>
+    </div>
+
+    <div class="callout">
+      <span class="callout-emoji">💡</span>
+      <div class="callout-text">
+        <strong>Pourquoi c'est important ?</strong> En notant la fin de contrat dès la signature, on déclenche automatiquement le rappel à J-90 qui lance le process de rétention. Sans cette étape, le client disparaît dans la nature et on se retrouve à courir après lui 5 jours avant la fin. Voir <strong>Page 1</strong> pour le process complet d'anticipation.
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-owner">📕 Sales Bible · Fullsoon</div>
+    <div class="footer-pages">Page 3 / 5</div>
+  </div>
+
+</body>
+</html>
